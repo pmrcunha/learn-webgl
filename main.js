@@ -109,7 +109,7 @@ const init = () => {
   const gl = canvas.getContext('webgl');
 
   if(!gl) {
-    alert('poop! No webGl for you!');
+    console.error('Tha webGlz doeznt workz... GET A PROPER BROWSER, you frig!!!');
     return;
   }
 
