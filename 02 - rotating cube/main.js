@@ -1,4 +1,5 @@
 import { mat4, glMatrix } from 'gl-matrix';
+import * as geo from './boxVertices.js';
 
 const vsSource = `
   precision mediump float;
@@ -66,12 +67,6 @@ const initShaderProgram = (gl, vsSource, fsSource) => {
 
 // initializes the buffer with the points and other data that the shader program will execute upon
 const initBuffers = (gl, shaderProgram) => {
-  const triangleVertices = [
-    // X, Y,    R,G,B,
-    0.0, 0.5, 0.0,   1.0, 1.0, 0.0,
-    -0.5, -0.5, 0.0, 0.7, 0.0, 1.0,
-    0.5, -0.5, 0.0,  0.1, 1.0, 0.6
-  ];
 
   const triangleVertexBufferObject = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBufferObject); // gl.ARRAY_BUFFER is a binding point, to which we are binding our webGL buffer object
@@ -79,7 +74,7 @@ const initBuffers = (gl, shaderProgram) => {
   // Javascript's number type is always a 64 bit float (or something like that)
   // Float32Array casts the numbers in the array to 32 bit floats
   // initializes the buffer at the target/binding point and stores data in it
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleVertices), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(geo.triangleVertices), gl.STATIC_DRAW);
   // static draw means that the contents of the buffer are likely to be used often, but rarely changed
   // gl.DYNAMIC_DRAW should be used for buffers that are used often and change often
   // gl.STREAM_DRAW should be used for buffers that are rarely used but change often
