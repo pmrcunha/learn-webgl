@@ -1,20 +1,18 @@
-// vertex shader and fragment shader written GLSL
-// the vertex shader is executed for each vertex of the shape
-
-/*
-In WebGL, values that apply to a specific vertex are stored in attributes. These are only available to the JavaScript code and the vertex shader. Attributes are referenced by an index number into the list of attributes maintained by the GPU
-*/
+import { mat4, glMatrix } from 'gl-matrix';
 
 const vsSource = `
   precision mediump float;
 
-  attribute vec2 vertPosition;
+  attribute vec3 vertPosition;
   attribute vec3 vertColor;
   varying vec3 fragColor;
+  uniform mat4 mWorld;
+  uniform mat4 mView;
+  uniform mat4 mProj;
 
   void main() {
     fragColor = vertColor;
-    gl_Position = vec4(vertPosition, 0.0, 1.0);
+    gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);
   }
 `;
 // the fragment shader is executed for each pixel to be rendered
@@ -70,9 +68,9 @@ const initShaderProgram = (gl, vsSource, fsSource) => {
 const initBuffers = (gl, shaderProgram) => {
   const triangleVertices = [
     // X, Y,    R,G,B,
-    0.0, 0.5,   1.0, 1.0, 0.0,
-    -0.5, -0.5, 0.7, 0.0, 1.0,
-    0.5, -0.5,  0.1, 1.0, 0.6
+    0.0, 0.5, 0.0,   1.0, 1.0, 0.0,
+    -0.5, -0.5, 0.0, 0.7, 0.0, 1.0,
+    0.5, -0.5, 0.0,  0.1, 1.0, 0.6
   ];
 
   const triangleVertexBufferObject = gl.createBuffer();
@@ -90,9 +88,9 @@ const initBuffers = (gl, shaderProgram) => {
   const positionAttribLocation = gl.getAttribLocation(shaderProgram, 'vertPosition');
   const colorAttribLocation = gl.getAttribLocation(shaderProgram, 'vertColor');
   {
-    const elementsPerAttribute = 2;
+    const elementsPerAttribute = 3;
     const typeOfElements = gl.FLOAT;
-    const sizeOfIndividualVertex = 5 * Float32Array.BYTES_PER_ELEMENT; // 5 numbers times the memory size of each number
+    const sizeOfIndividualVertex = 6 * Float32Array.BYTES_PER_ELEMENT; // 5 numbers times the memory size of each number
     const offsetFromVertexStartToThisAttribute = 0;
     // specifies the memory layout of the buffer
     gl.vertexAttribPointer(
@@ -108,8 +106,8 @@ const initBuffers = (gl, shaderProgram) => {
   {
     const elementsPerAttribute = 3;
     const typeOfElements = gl.FLOAT;
-    const sizeOfIndividualVertex = 5 * Float32Array.BYTES_PER_ELEMENT;
-    const offsetFromVertexStartToThisAttribute = 2 * Float32Array.BYTES_PER_ELEMENT; // skip the position values to get to the color values
+    const sizeOfIndividualVertex = 6 * Float32Array.BYTES_PER_ELEMENT;
+    const offsetFromVertexStartToThisAttribute = 3 * Float32Array.BYTES_PER_ELEMENT; // skip the position values to get to the color values
     gl.vertexAttribPointer(
       colorAttribLocation,
       elementsPerAttribute,
@@ -127,6 +125,38 @@ const initBuffers = (gl, shaderProgram) => {
   gl.enableVertexAttribArray(colorAttribLocation);
 }
 
+const setTransformations = (gl, shaderProgram, canvas) => {
+  // Locations in GPU memory
+  const matWorldUniformLocation = gl.getUniformLocation(shaderProgram, 'mWorld');
+  const matViewUniformLocation = gl.getUniformLocation(shaderProgram, 'mView');
+  const matProjUniformLocation = gl.getUniformLocation(shaderProgram, 'mProj');
+
+  // Matrices in RAM (CPU)
+  const worldMatrix = new Float32Array(16);
+  const viewMatrix = new Float32Array(16);
+  const projMatrix = new Float32Array(16);
+  mat4.identity(worldMatrix);
+  mat4.lookAt(viewMatrix, [0, 0, -2], [0, 0, 0], [0, 1, 0]); // TODO doc this
+  mat4.perspective(projMatrix, glMatrix.toRadian(45), canvas.width / canvas.height, 0.1, 1000.0); // TODO doc this
+
+  // bind matrix data to GPU memory
+  gl.uniformMatrix4fv(
+    matWorldUniformLocation,
+    gl.FALSE, // transpose - always false in webGL (but not in openGL)
+    worldMatrix,
+  );
+  gl.uniformMatrix4fv(
+    matViewUniformLocation,
+    gl.FALSE, // transpose - always false in webGL (but not in openGL)
+    viewMatrix,
+  );
+  gl.uniformMatrix4fv(
+    matProjUniformLocation,
+    gl.FALSE, // transpose - always false in webGL (but not in openGL)
+    projMatrix,
+  );
+}
+
 const init = () => {
   const canvas = document.getElementById('canvas');
   const gl = canvas.getContext('webgl');
@@ -136,24 +166,36 @@ const init = () => {
     return;
   }
 
-  gl.clearColor(0.75, 0.85, 0.8, 1.0); // sets the color that the screen will be cleared to
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // clears the screen at all different depths (shapes render over previously rendered shapes)
+  gl.clearColor(0.75, 0.85, 0.8, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
   initBuffers(gl, shaderProgram); // needs the shader program to get a pointer to the attributes
 
   gl.useProgram(shaderProgram); // sets a webGl / shader program to be used
-  /*
-  render primitives from array data
-  gl.POINTS draws a single dot
-  gl.LINES draws lines between 2 vertex
-  gl.TRIANGLES draws a face/triangle from 3 vertex
-  */
-  gl.drawArrays(
-    gl.TRIANGLES, // tyoe primitive to render. see above
-    0, // starting index in the array of vertex points
-    3 // number of indices to be rendered
-  );
+
+  setTransformations(gl, shaderProgram, canvas);
+
+  const matWorldUniformLocation = gl.getUniformLocation(shaderProgram, 'mWorld');
+  const worldMatrix = new Float32Array(16);
+
+  const identityMatrix = new Float32Array(16);
+  mat4.identity(identityMatrix);
+  let angle = 0;
+  let nrSecondsSinceWindowInit = 0;
+  const loop = () => {
+    nrSecondsSinceWindowInit = performance.now() / 1000;
+    angle = nrSecondsSinceWindowInit / 0.2 * 2 * Math.PI; // a full rotation every 6 seconds
+    mat4.rotate(worldMatrix, identityMatrix, angle, [0, 1, 0]); // TODO doc this
+    gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+
+    gl.clearColor(0.75, 0.85, 0.8, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    window.requestAnimationFrame(loop);
+  }
+  window.requestAnimationFrame(loop);
 }
 
 init();
