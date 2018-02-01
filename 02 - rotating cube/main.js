@@ -157,6 +157,33 @@ const setTransformations = (gl, shaderProgram, canvas) => {
   );
 }
 
+const render = (gl, shaderProgram) => {
+  const matWorldUniformLocation = gl.getUniformLocation(shaderProgram, 'mWorld');
+  const worldMatrix = new Float32Array(16);
+
+  const identityMatrix = new Float32Array(16);
+  mat4.identity(identityMatrix);
+  let angle = 0;
+  let nrSecondsSinceWindowInit = 0;
+  const loop = () => {
+    nrSecondsSinceWindowInit = performance.now() / 1000;
+    angle = nrSecondsSinceWindowInit / 6 * 2 * Math.PI; // a full rotation every 6 seconds
+    mat4.rotate(
+      worldMatrix, // receiving matrix (output)
+      identityMatrix, // the matrix to rotate
+      angle,
+      [0, 1, 0]); // axis to rotate around
+    gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+
+    gl.clearColor(0.75, 0.85, 0.8, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    window.requestAnimationFrame(loop);
+  }
+  window.requestAnimationFrame(loop);
+}
+
 const init = () => {
   const canvas = document.getElementById('canvas');
   const gl = canvas.getContext('webgl');
@@ -176,26 +203,7 @@ const init = () => {
 
   setTransformations(gl, shaderProgram, canvas);
 
-  const matWorldUniformLocation = gl.getUniformLocation(shaderProgram, 'mWorld');
-  const worldMatrix = new Float32Array(16);
-
-  const identityMatrix = new Float32Array(16);
-  mat4.identity(identityMatrix);
-  let angle = 0;
-  let nrSecondsSinceWindowInit = 0;
-  const loop = () => {
-    nrSecondsSinceWindowInit = performance.now() / 1000;
-    angle = nrSecondsSinceWindowInit / 0.2 * 2 * Math.PI; // a full rotation every 6 seconds
-    mat4.rotate(worldMatrix, identityMatrix, angle, [0, 1, 0]); // TODO doc this
-    gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
-
-    gl.clearColor(0.75, 0.85, 0.8, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-    window.requestAnimationFrame(loop);
-  }
-  window.requestAnimationFrame(loop);
+  render(gl, shaderProgram);
 }
 
 init();
