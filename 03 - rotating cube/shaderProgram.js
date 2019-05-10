@@ -18,7 +18,7 @@ const loadShader = (gl, type, source) => {
 // link the compiled shaders into a webGL program
 export const initShaderProgram = () => {
   const vertexShader = loadShader(gl, gl.VERTEX_SHADER, shaders.vsSource);
-  const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, shaders.fsSource);
+  const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, shaders.fsSource3);
 
   const shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vertexShader);

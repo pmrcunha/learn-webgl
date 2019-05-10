@@ -4,47 +4,35 @@ import * as geo from "./boxVertices";
 
 // initializes the buffer with the points and other data that the shader program will execute upon
 const setupBuffer = () => {
-  const triangleVertexBufferObject = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBufferObject);
-  gl.bufferData(
-    gl.ARRAY_BUFFER,
-    new Float32Array(geo.triangleVertices),
-    gl.STATIC_DRAW
-  );
-
-  // gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-  const triangleIndicesBufferObject = gl.createBuffer();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleIndicesBufferObject);
-  gl.bufferData(
-    gl.ELEMENT_ARRAY_BUFFER,
-    new Uint16Array(geo.triangleIndices),
-    gl.STATIC_DRAW
-  );
-
-  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-  // const vertices = new Float32Array(geo.boxVertices);
-
-  // const boxVertexBufferObject = gl.createBuffer();
-  // gl.bindBuffer(gl.ARRAY_BUFFER, boxVertexBufferObject);
+  // TRIANGLE
+  // const triangleVertexBufferObject = gl.createBuffer();
+  // gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBufferObject);
   // gl.bufferData(
   //   gl.ARRAY_BUFFER,
-  //   24 * Float32Array.BYTES_PER_ELEMENT,
-  //   vertices,
+  //   new Float32Array(geo.triangleVertices),
   //   gl.STATIC_DRAW
   // );
 
-  // const indices = new Float32Array(geo.boxIndices);
-
-  // const boxIndicesBufferObject = gl.createBuffer();
-  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, boxIndicesBufferObject);
+  // const triangleIndicesBufferObject = gl.createBuffer();
+  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triangleIndicesBufferObject);
   // gl.bufferData(
   //   gl.ELEMENT_ARRAY_BUFFER,
-  //   12 * Float32Array.BYTES_PER_ELEMENT,
-  //   indices,
+  //   new Uint16Array(geo.triangleIndices),
   //   gl.STATIC_DRAW
   // );
+
+  // BOX
+  const vertices = new Float32Array(geo.boxVertices);
+
+  const boxVertexBufferObject = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, boxVertexBufferObject);
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+  const indices = new Uint16Array(geo.boxIndices);
+
+  const boxIndicesBufferObject = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, boxIndicesBufferObject);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
   const positionAttribLocation = gl.getAttribLocation(
     shaderProgram,
@@ -66,7 +54,6 @@ const setupBuffer = () => {
       offsetFromVertexStartToThisAttribute
     );
   }
-  // block scoping is awesome
   {
     const elementsPerAttribute = 3;
     const typeOfElements = gl.FLOAT;
