@@ -1,8 +1,8 @@
 {
-  "name": "02-rotating-cube",
+  "name": "03-rotating-cube",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Paulo CUnha",
+  "author": "Paulo Cunha",
   "license": "MIT",
   "dependencies": {
     "gl-matrix": "^2.4.0"
@@ -12,6 +12,8 @@
     "start": "yarn build && webpack-dev-server"
   },
   "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-pmrcunha": "^1.5.0",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.11.1"
   }
