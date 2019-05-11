@@ -1,0 +1,7 @@
+{
+  "extends": "pmrcunha/base",
+  "rules": {
+    "no-bitwise": "off",
+    "no-param-reassign": "off"
+  }
+}
