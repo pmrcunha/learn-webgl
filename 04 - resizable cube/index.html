@@ -5,10 +5,77 @@
   </head>
 
   <body>
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+      precision mediump float;
+
+      varying vec3 fragColor;
+
+      void main() {
+        gl_FragColor = vec4(fragColor, 1.0);
+      }
+    </script>
     <canvas id="canvas" width="800" height="600"></canvas>
     <script src="./dist/main.js"></script>
-    <label>X: <input id="change-x" type="number" value="0"/></label>
-    <label>Y: <input id="change-y" type="number" value="0"/></label>
-    <label>Z: <input id="change-z" type="number" value="0"/></label>
+    <div>
+      <label>X: <input id="change-x" type="number" value="1"/></label>
+      <label>Y: <input id="change-y" type="number" value="1"/></label>
+      <label>Z: <input id="change-z" type="number" value="1"/></label>
+    </div>
+    <div>
+      <h3>Box</h3>
+      <div>
+        <h4>Translate</h4>
+        <label
+          >X: <input id="box-translate-x" type="number" value="0.5"
+        /></label>
+        <label>Y: <input id="box-translate-y" type="number" value="0"/></label>
+        <label>Z: <input id="box-translate-z" type="number" value="0"/></label>
+      </div>
+      <div>
+        <h4>Rotate</h4>
+        <label>X: <input id="box-rotate-x" type="number" value="0"/></label>
+        <label>Y: <input id="box-rotate-y" type="number" value="0"/></label>
+        <label>Z: <input id="box-rotate-z" type="number" value="0"/></label>
+      </div>
+      <div>
+        <h4>Scale</h4>
+        <label>X: <input id="box-scale-x" type="number" value="1"/></label>
+        <label>Y: <input id="box-scale-y" type="number" value="1"/></label>
+        <label>Z: <input id="box-scale-z" type="number" value="1"/></label>
+      </div>
+    </div>
+    <div>
+      <h3>Triangle</h3>
+      <div>
+        <h4>Translate</h4>
+        <label
+          >X: <input id="triangle-translate-x" type="number" value="0"
+        /></label>
+        <label
+          >Y: <input id="triangle-translate-y" type="number" value="0"
+        /></label>
+        <label
+          >Z: <input id="triangle-translate-z" type="number" value="0"
+        /></label>
+      </div>
+      <div>
+        <h4>Rotate</h4>
+        <label
+          >X: <input id="triangle-rotate-x" type="number" value="1"
+        /></label>
+        <label
+          >Y: <input id="triangle-rotate-y" type="number" value="0"
+        /></label>
+        <label
+          >Z: <input id="triangle-rotate-z" type="number" value="0"
+        /></label>
+      </div>
+      <div>
+        <h4>Scale</h4>
+        <label>X: <input id="triangle-scale-x" type="number" value="1"/></label>
+        <label>Y: <input id="triangle-scale-y" type="number" value="1"/></label>
+        <label>Z: <input id="triangle-scale-z" type="number" value="1"/></label>
+      </div>
+    </div>
   </body>
 </html>

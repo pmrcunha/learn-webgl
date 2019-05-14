@@ -3,16 +3,16 @@ export const objects = [
     vertices: [
         // X, Y, Z           R, G, B
   // Top
-		-1.0, 1.0, -1.0,   1.0, 0.0, 0.0,
-		-1.0, 1.0, 1.0,    1.0, 0.0, 0.0,
-		1.0, 1.0, 1.0,     1.0, 0.0, 0.0,
-		1.0, 1.0, -1.0,    1.0, 0.0, 0.0,
+		-1.0, 1.0, -1.0,   0.0, 0.0, 1.0,
+		-1.0, 1.0, 1.0,    0.0, 0.0, 1.0,
+		1.0, 1.0, 1.0,     0.0, 0.0, 1.0,
+		1.0, 1.0, -1.0,    0.0, 0.0, 1.0,
 
 		// Left
-		-1.0, 1.0, 1.0,    1.0, 0.0, 0.0,
-		-1.0, -1.0, 1.0,   1.0, 0.0, 0.0,
-		-1.0, -1.0, -1.0,  1.0, 0.0, 0.0,
-		-1.0, 1.0, -1.0,   1.0, 0.0, 0.0,
+		-1.0, 1.0, 1.0,    0.0, 0.0, 1.0,
+		-1.0, -1.0, 1.0,   0.0, 0.0, 1.0,
+		-1.0, -1.0, -1.0,  0.0, 0.0, 1.0,
+		-1.0, 1.0, -1.0,   0.0, 0.0, 1.0,
 
 		// Right
 		1.0, 1.0, 1.0,    1.0, 0.0, 0.0,
@@ -86,7 +86,12 @@ export const objects = [
     void main() {
       gl_FragColor = vec4(fragColor, 1.0);
     }
-  `
+  `,
+    transformIds: {
+      scale: ['box-scale-x', 'box-scale-y', 'box-scale-z'],
+      translate: ['box-translate-x', 'box-translate-y', 'box-translate-z'],
+      rotate: ['box-rotate-x', 'box-rotate-y', 'box-rotate-z']
+    }
   },
   // triangle
   {
@@ -124,8 +129,13 @@ export const objects = [
     void main() {
       gl_FragColor = vec4(fragColor, 1.0);
     }
-  `
+  `,
+  transformIds: {
+    scale: ['triangle-scale-x', 'triangle-scale-y', 'triangle-scale-z'],
+    translate: ['triangle-translate-x', 'triangle-translate-y', 'triangle-translate-z'],
+    rotate: ['triangle-rotate-x', 'triangle-rotate-y', 'triangle-rotate-z']
   }
+}
 ];
 
 export const getBoxVertices = (x,y,z, color) => ([
